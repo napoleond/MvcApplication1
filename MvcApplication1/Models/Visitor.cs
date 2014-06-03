@@ -23,5 +23,10 @@ namespace MvcApplication1.Models
 
         [DataMember]
         public DateTime Date { get; set; }
+
+        public Visitor()
+        {
+            this.Date = DateTime.Now;
+        }
     }
 }

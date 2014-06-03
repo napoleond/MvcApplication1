@@ -60,6 +60,14 @@ namespace MvcApplication1.Models
             CloudBlobContainer container = blobClient.GetContainerReference("mycontainer");
             container.CreateIfNotExists();
             this.visitorsBlob = container.GetBlockBlobReference("visitors");
+            try
+            {
+                this.visitorsBlob.FetchAttributes();
+            }
+            catch (Exception ex)
+            {
+                this.visitorsBlob.UploadText("[]");
+            }
         }
 
         public IEnumerable<Visitor> GetList()
