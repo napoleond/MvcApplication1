@@ -1,0 +1,47 @@
+@model IEnumerable<MvcApplication1.Models.Visitor>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Register", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            LastName
+        </th>
+        <th>
+            FirstName
+        </th>
+        <th>
+            Phrase
+        </th>
+        <th>
+            Date
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+			@item.LastName
+        </td>
+        <td>
+			@item.FirstName
+        </td>
+        <td>
+			@item.Phrase
+        </td>
+        <td>
+			@String.Format("{0:g}", item.Date)
+        </td>
+    </tr>
+}
+
+</table>
+
+
