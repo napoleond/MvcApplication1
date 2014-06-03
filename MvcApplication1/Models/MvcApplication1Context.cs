@@ -24,8 +24,9 @@ namespace MvcApplication1.Models
 
         public CommandQueueAgent()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
+            //so obviously the connection string shouldn't be hard coded, but using web.config wasn't
+            //working as expected and debugging proved difficult with my current setup...
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dnoel;AccountKey=SmfIMeCfHIwiqNb4ZfTwxmEHNj1UKkMKt5cvG3zGdcbbU6MfIn4iM+k5AbPPb09pCnVRFCcdh09pw+BSuz3Wlg==");
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
             this.queue = queueClient.GetQueueReference("visitors");
             this.queue.CreateIfNotExists();
@@ -53,8 +54,8 @@ namespace MvcApplication1.Models
         private CloudBlockBlob visitorsBlob;
         public VisitorListFactory()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
+            //see note above
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dnoel;AccountKey=SmfIMeCfHIwiqNb4ZfTwxmEHNj1UKkMKt5cvG3zGdcbbU6MfIn4iM+k5AbPPb09pCnVRFCcdh09pw+BSuz3Wlg==");
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer container = blobClient.GetContainerReference("mycontainer");
             container.CreateIfNotExists();

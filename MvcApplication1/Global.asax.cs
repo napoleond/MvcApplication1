@@ -9,6 +9,7 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using MvcApplication1.Models;
+using MvcApplication1.Controllers;
 
 namespace MvcApplication1
 {
@@ -20,9 +21,10 @@ namespace MvcApplication1
         protected void Application_Start()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterControllers(typeof(MvcApplication).Assembly);
-            builder.RegisterType<CommandQueueAgent>().As<ICommandAgent>().InstancePerRequest();
-            builder.RegisterType<VisitorListFactory>().As<IListFactory<Visitor>>().InstancePerRequest();
+            //builder.RegisterControllers(typeof(MvcApplication).Assembly);
+            builder.RegisterType<VisitorsController>().InstancePerHttpRequest();
+            builder.RegisterType<CommandQueueAgent>().As<ICommandAgent>().InstancePerHttpRequest();
+            builder.RegisterType<VisitorListFactory>().As<IListFactory<Visitor>>().InstancePerHttpRequest();
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
