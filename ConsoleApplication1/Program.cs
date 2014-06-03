@@ -56,6 +56,14 @@ namespace ConsoleApplication1
         }
     }
 
+    public class MockListStorage : IListStorage<Visitor>
+    {
+        public void Add(Visitor item)
+        {
+            //do nothing
+        }
+    }
+
     public interface IQueue<T>
     {
         T GetMessage();
@@ -84,11 +92,27 @@ namespace ConsoleApplication1
         }
     }
 
-    class Store
+    public class MockQueue : IQueue<CloudQueueMessage>
+    {
+        public CloudQueueMessage GetMessage()
+        {
+            return null; //would probably want to write a fancier mock that did different things
+        }
+
+        public void DeleteMessage(CloudQueueMessage message)
+        {
+            //do nothing
+        }
+    }
+
+    public class StoreBase
     {
         public IQueue<CloudQueueMessage> queue;
         public IListStorage<Visitor> listStore;
+    }
 
+    public class Store : StoreBase
+    {
         public Store()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=dnoel;AccountKey=SmfIMeCfHIwiqNb4ZfTwxmEHNj1UKkMKt5cvG3zGdcbbU6MfIn4iM+k5AbPPb09pCnVRFCcdh09pw+BSuz3Wlg==");
@@ -98,11 +122,30 @@ namespace ConsoleApplication1
         }
     }
 
-    class Program
+    public class MockStore : StoreBase
+    {
+        public MockStore()
+        {
+            this.queue = new MockQueue();
+            this.listStore = new MockListStorage();
+        }
+    }
+
+    public class Program
     {
         public static void Main()
         {
             Store store = new Store();
+            Run(store);
+        }
+        public static void MockMain()
+        {
+            MockStore store = new MockStore();
+            Run(store);
+        }
+
+        public static void Run(StoreBase store)
+        {
             Console.WriteLine("Waiting for messages...");
             while (true)
             {
