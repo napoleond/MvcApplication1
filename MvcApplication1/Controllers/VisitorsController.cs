@@ -9,55 +9,24 @@ using MvcApplication1.Models;
 
 namespace MvcApplication1.Controllers
 {
-    public interface ICommandAgent
-    {
-        void SendCommand(object command);
-    }
-
-    public class CommandQueueAgent : ICommandAgent
-    {
-        public CommandQueueAgent()
-        {
-            //TODO init azure queue
-        }
-
-        public void SendCommand(object command)
-        {
-            //TODO add to queue
-        }
-    }
-
-    public interface IListFactory<T>
-    {
-        IEnumerable<T> GetList();
-    }
-
-    public class VisitorListFactory : IListFactory<Visitor>
-    {
-        public VisitorListFactory() 
-        {
-            //TODO init blob storage
-        }
-
-        public IEnumerable<Visitor> GetList()
-        {
-            //TODO fetch and desrialize JSON from storage
-        }
-    }
-
     public class VisitorsController : Controller
     {
         private MvcApplication1Context context = new MvcApplication1Context();
+        private ICommandAgent commandAgent;
+        private IListFactory<Visitor> visitorListFactory;
 
-        //TODO: make constructor for visitorscontroller, inject dependencies using autofac
+        public VisitorsController(ICommandAgent commandAgent, IListFactory<Visitor> visitorListFactory)
+        {
+            this.commandAgent = commandAgent;
+            this.visitorListFactory = visitorListFactory;
+        }
 
         //
         // GET: /Visitors/
 
         public ViewResult Index()
         {
-            //TODO: generate visitor list using factory interface
-            return View(context.Visitors.ToList());
+            return View(this.visitorListFactory.GetList());
         }
 
         //
@@ -74,23 +43,13 @@ namespace MvcApplication1.Controllers
         [HttpPost]
         public ActionResult Create(Visitor visitor)
         {
-            //TODO: create command for queue
             if (ModelState.IsValid)
             {
-                context.Visitors.Add(visitor);
-                context.SaveChanges();
+                this.commandAgent.SendCommand(visitor);
                 return RedirectToAction("Index");  
             }
 
             return View(visitor);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) {
-                context.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
